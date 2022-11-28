@@ -52,10 +52,10 @@ const Login = () => {
       //   auth_token: "LMiaocRZZrTobWsvot9Ckzg1vO5dmnxAciT4sYXrYQ/36tNCY/rkC17ibc5c0LKaeR+joksGSYYgJ/i9ERCEIVrmAXHiwfUdEZ3xpu3DFRGOwreBCC8QsaExhebQFz7E4tQ=",
       //   expiry: "2022-07-21T16:52:33.326922175Z"
       // }
-      if (isSuccessfulRequest(status) && data) {
+      if (isSuccessfulRequest(status)) {
         setSubmitting(false);
-        // logIn(data);
-        //  navigate("/products");
+        logIn(data);
+        navigate("/products");
       }
       // navigate("/products");
       toast.success("Succesfully Log in")

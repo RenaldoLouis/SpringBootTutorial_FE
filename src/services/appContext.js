@@ -75,8 +75,8 @@ const AppContext = ({ children }) => {
   const logIn = (userDetails) => {
     setLocalUserDetails(userDetails);
 
-    setUserAuthToken(userDetails.auth_token);
-    http.setAuthTokenHeader(userDetails.auth_token);
+    setUserAuthToken(userDetails.token);
+    http.setAuthTokenHeader(userDetails.token);
 
     dispatch({ type: ACTION_KEYS.LOG_IN, payload: { userDetails } });
   };

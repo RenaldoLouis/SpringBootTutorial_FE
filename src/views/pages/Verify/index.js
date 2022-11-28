@@ -4,16 +4,21 @@ import { isSuccessfulRequest } from '../../../utils/apiHelper';
 import { toast } from 'react-toastify';
 import { handleSimpleError } from '../../../utils/errorHandlers';
 import { useParams, useSearchParams } from 'react-router-dom';
+import { Button } from 'antd';
+import { useNavigate } from 'react-router-dom';
+
 
 
 const Verify = () => {
-    const [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
 
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const [doneVerify, setDoneVerify] = useState(false)
     const [verifyStatus, setVerifyStatus] = useState("")
 
     const handleVerify = async () => {
+        setDoneVerify(true)
         try {
             const payload = searchParams
             const { status, data } = await apis.auth.verify(payload);
@@ -21,21 +26,22 @@ const Verify = () => {
             // var splitStr = payload.substring(payload.indexOf('?') + 1);
             // const { status, data } = await apis.auth.verify(splitStr);
             if (isSuccessfulRequest(status) && data) {
-                toast.success("Succesfully Succesfully Verified")
-                setDoneVerify(true)
+                toast.success("Succesfully Verified")
                 setVerifyStatus("Succesfully Verified")
             }
         } catch (error) {
             handleSimpleError(error);
-            setDoneVerify(true)
             setVerifyStatus("Verify Failed Please try to register again")
         }
     }
 
+    const handleMovePage = () => {
+        navigate("/login");
+    }
+
     useEffect(() => {
         searchParams.get("token")
-
-        if (verifyStatus === "") {
+        if (verifyStatus === "" && !doneVerify) {
             handleVerify();
         }
     }, [])
@@ -48,6 +54,7 @@ const Verify = () => {
                     Succesfully Verified
                 </div>
             )}
+            <Button onClick={handleMovePage}>Go To Login Page</Button>
         </>
     )
 }
