@@ -30,6 +30,7 @@ const Login = () => {
   const [submitting, setSubmitting] = useState(false);
 
   const [isRegister, setIsRegister] = useState(false);
+  const [isReverify, setIsReverify] = useState(false);
 
   const {
     handlers: { logIn, logOut },
@@ -60,6 +61,30 @@ const Login = () => {
       // navigate("/products");
       toast.success("Succesfully Log in")
     } catch (error) {
+      console.log("erorr", error)
+      setSubmitting(false);
+      handleSimpleError("Login failed please check the username / password and make sure the email has been verified");
+    }
+  };
+
+  const handleReverify = async (values) => {
+    setSubmitting(true);
+
+    try {
+      const payload = {
+        email: values.username,
+      };
+      const { status, data } = await apis.auth.reVerify(payload);
+      // const data = {
+      //   auth_token: "LMiaocRZZrTobWsvot9Ckzg1vO5dmnxAciT4sYXrYQ/36tNCY/rkC17ibc5c0LKaeR+joksGSYYgJ/i9ERCEIVrmAXHiwfUdEZ3xpu3DFRGOwreBCC8QsaExhebQFz7E4tQ=",
+      //   expiry: "2022-07-21T16:52:33.326922175Z"
+      // }
+      if (isSuccessfulRequest(status)) {
+        setSubmitting(false);
+      }
+      toast.success("Please Check your email for verification")
+    } catch (error) {
+      console.log("erorr", error)
       setSubmitting(false);
       handleSimpleError(error);
     }
@@ -110,7 +135,11 @@ const Login = () => {
   };
 
   const changeType = () => {
+    setIsReverify(false)
     setIsRegister(!isRegister)
+  }
+  const changeReverify = () => {
+    setIsReverify(true)
   }
 
   useEffect(() => {
@@ -122,7 +151,96 @@ const Login = () => {
   const LoginContent = () => {
     return (
       <div className={styles.loginContainer}>
-        {isRegister ? (<Form form={form} scrollToFirstError onFinish={handleRegister}>
+        {isReverify ?
+          (
+            <Form form={form} scrollToFirstError onFinish={handleReverify}>
+              <Row gutter={[8, 16]}>
+                <Col xs={24}>
+                  <Form.Item
+                    {...loginFormLayout}
+                    name="username"
+                    id="username"
+                    label={t('USERNAME')}
+                    rules={requiredValidation(t('PLEASE_INPUT_YOUR_USERNAME'))}
+                  >
+                    <Input placeholder={t('INPUT_USERNAME_HERE')} />
+                  </Form.Item>
+                </Col>
+                <Col xs={24}>
+                  <Button block type="primary" htmlType="submit" loading={submitting}>
+                    {t('Verify')}
+                  </Button>
+                </Col>
+              </Row>
+            </Form>
+          ) :
+          (
+            isRegister ? (
+              <Form form={form} scrollToFirstError onFinish={handleRegister}>
+                <Row gutter={[8, 16]}>
+                  <Col xs={24}>
+                    <Form.Item
+                      {...loginFormLayout}
+                      name="username"
+                      id="username"
+                      label={t('USERNAME')}
+                      rules={requiredValidation(t('PLEASE_INPUT_YOUR_USERNAME'))}
+                    >
+                      <Input placeholder={t('INPUT_USERNAME_HERE')} />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24}>
+                    <Form.Item
+                      {...loginFormLayout}
+                      name="password"
+                      id="password"
+                      label={t('PASSWORD')}
+                      rules={requiredValidation(t('PLEASE_INPUT_YOUR_PASSWORD'))}
+                    >
+                      <Input.Password placeholder={t('INPUT_PASSWORD_HERE')} />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24}>
+                    <Button block type="primary" htmlType="submit" loading={submitting}>
+                      {t('REGISTER')}
+                    </Button>
+                  </Col>
+                </Row>
+              </Form>
+            ) : (
+              <Form form={form} scrollToFirstError onFinish={handleFinish}>
+                <Row gutter={[8, 16]}>
+                  <Col xs={24}>
+                    <Form.Item
+                      {...loginFormLayout}
+                      name="username"
+                      id="username"
+                      label={t('USERNAME')}
+                      rules={requiredValidation(t('PLEASE_INPUT_YOUR_USERNAME'))}
+                    >
+                      <Input placeholder={t('INPUT_USERNAME_HERE')} />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24}>
+                    <Form.Item
+                      {...loginFormLayout}
+                      name="password"
+                      id="password"
+                      label={t('PASSWORD')}
+                      rules={requiredValidation(t('PLEASE_INPUT_YOUR_PASSWORD'))}
+                    >
+                      <Input.Password placeholder={t('INPUT_PASSWORD_HERE')} />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24}>
+                    <Button block type="primary" htmlType="submit" loading={submitting}>
+                      {t('LOGIN')}
+                    </Button>
+                  </Col>
+                </Row>
+              </Form>)
+          )}
+        {/* {isRegister ? (<Form form={form} scrollToFirstError onFinish={handleRegister}>
           <Row gutter={[8, 16]}>
             <Col xs={24}>
               <Form.Item
@@ -184,14 +302,20 @@ const Login = () => {
                 </Button>
               </Col>
             </Row>
-          </Form>)}
+          </Form>)} */}
 
-
-        <Col xs={12} style={{ marginTop: 15 }}>
-          <Button onClick={changeType} block type="primary" loading={submitting}>
-            Swith To Register / Login
-          </Button>
-        </Col>
+        <Row gutter={[16, 24]} style={{ marginTop: 15 }} >
+          <Col xs={12} span={6}>
+            <Button onClick={changeType} block type="primary" loading={submitting}>
+              Swith To Register / Login
+            </Button>
+          </Col>
+          <Col xs={12} span={6}>
+            <Button onClick={changeReverify} block type="primary" loading={submitting}>
+              Verify Existed Account
+            </Button>
+          </Col>
+        </Row>
       </div>
     )
   }

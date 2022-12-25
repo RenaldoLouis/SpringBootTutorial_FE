@@ -51,6 +51,7 @@ const deleteRequest = async (path) => {
 export default {
   auth: {
     login: (payload) => postRequest('/users/login', payload),
+    reVerify: (payload) => postRequest('/users/reVerify', payload),
     signup: (payload) => postRequest('/users/signUp', payload),
     verify: (payload) => getRequest(`/users/emailVerification?${payload}`),
   },
